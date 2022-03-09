@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 
 const feedRoutes = require('./routes/feed');
+const userRoutes = require('./routes/user');
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use((req, res, next) => {
 });
 // GET /feed/post
 app.use('/feed', feedRoutes);
+app.use('/user', userRoutes);
 
 app.use((error, req, res, next) => {
     console.log(error);
