@@ -1,11 +1,35 @@
 const express = require('express');
-//const { body } = require('express-validator/check');
+const { body } = require('express-validator/check');
 
-//const userController = require('../controllers/feed');
+const User = require('../models/user');
+const userController = require('../controllers/user');
 
 const router = express.Router();
 
-router.put('/signup', );
+router.put('/signup', [
+    body('email')
+        .isEmail()
+        .withMessage('Please enter a valid email')
+        .custom((value, {req}) => {
+            return User
+                .findOne({email: avalue})
+                .then(userDoc => {
+                    if (userDoc) {
+                        return Promise.reject('Email address already exist');
+                    }
+                });
+        })
+        .normalizeEmail(),
+    body('password')
+        .trim()
+        .isLength({ min: 5}),
+    body('name')
+        .trim()
+        .not()
+        .isEmpty()
+    ], 
+    userController.signup
+);
 
 
 module.exports = router;
