@@ -6,16 +6,32 @@ const { validationResult } = require('express-validator/check');
 const Post = require('../models/post');
 
 exports.getPosts = (req, res, next) => {
+    const currentPage = req.query.page || 1;
+    const perPage = 2;
+    let totalItems;
     Post.find()
-    .then(posts => {
-        res.status(200).json({message: 'Fetched posts successfully', posts: posts});
-    })
-    .catch(err => {
-        if (!err.statusCode) {
-            err.statusCode = 500;
-        }
-        next(err);
-    });
+        .countDocuments()
+    .   then(count => {
+            totalItems = count;
+            return Post.find()
+                .skip((currentPage -1) * perPage)
+                .limit(perPage);
+        })
+        .then(posts => {
+            res
+                .status(200)
+                .json({
+                    message: 'Fetched posts successfully', 
+                    posts: posts,
+                    totalItems: totalItems
+                });
+        })
+        .catch(err => {
+            if (!err.statusCode) {
+                err.statusCode = 500;
+            }
+            next(err);
+        });
 };
 
 exports.postPost = (req, res, next) => {
@@ -39,18 +55,20 @@ exports.postPost = (req, res, next) => {
         imageUrl: imageUrl,
         creator: { name: 'Mell'}
     });
-    post.save().then(result => {
-        res.status(201).json({ //201 es para decir que se creo el recurso exitosamente
-            message: 'Post created!',
-            post: result
+    post
+        .save()
+        .then(result => {
+            res.status(201).json({ //201 es para decir que se creo el recurso exitosamente
+                message: 'Post created!',
+                post: result
+            });
+        })
+        .catch(err => {
+            if (!err.statusCode) {
+                err.statusCode = 500;
+            }
+            next(err);
         });
-    })
-    .catch(err => {
-        if (!err.statusCode) {
-            err.statusCode = 500;
-        }
-        next(err);
-    });
 };
 
 exports.getPost = (req, res, next) => {

@@ -22,15 +22,18 @@ const fileFilter = (req, file, cb) => {
     if (
         file.mimetype === 'image/png' || 
         file.mimetype === 'image/jpg' || 
-        file.mimetype === 'image/jpeg') {
-            cb(null, true);
+        file.mimetype === 'image/jpeg'
+    ) {
+        cb(null, true);
     } else {
         cb(null, false);
     }
-}
+};
 // app.use(bodyParser.urlencoded()); ---> x-www-form-urlencoded <form></form>
 app.use(bodyParser.json()); //application/json
-app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single('image'))
+app.use(
+    multer({storage: fileStorage, fileFilter: fileFilter}).single('image')
+);
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use((req, res, next) => {
