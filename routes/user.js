@@ -12,7 +12,7 @@ router.put('/signup', [
         .withMessage('Please enter a valid email')
         .custom((value, {req}) => {
             return User
-                .findOne({email: avalue})
+                .findOne({email: value})
                 .then(userDoc => {
                     if (userDoc) {
                         return Promise.reject('Email address already exist');
@@ -31,5 +31,6 @@ router.put('/signup', [
     userController.signup
 );
 
+router.post('/login', userController.login);
 
 module.exports = router;
